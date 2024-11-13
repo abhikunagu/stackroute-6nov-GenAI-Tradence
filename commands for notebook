@@ -1,0 +1,165 @@
+
+# Unstructured data -> derive insights or make decisions or give instructions or take automated actions
+
+# data lake -> store the data
+# read and Feature engineer-> data pre-processing
+# train/Fine tune/transfer/use-as-is the model -> cluster/distributed processing
+# test the model -> monitoring infra
+# evaluate the model-> same monitoring infra
+# deploy the model -> containers, Kubernetes, Flask API....
+
+
+ # data pre-processing
+ #
+ # text data -> Document -> pages -> paragraphs -> sentences -> words
+ # SEGMENTATION
+
+ # individual components to analyze?
+ # TOKENIZATION
+
+
+ # The cat is hungry. -> [The, cat, is, hungry] or [The, cat, is, hungry, .]
+
+ # multiple words-> The Himalayas are tall -> ['The Himalayas', 'are', 'tall']
+
+ # stopwords -> a, an, the -> inconsequential words!
+ # sentiment analysis -> a, an, the could be used in both pos and neg sentiments!
+
+ # order to figure out these complex grammars:
+ # PART of SPEECH tagging -> nouns, pronouns, verbs, adverbs, adjectives
+
+ # 'The himalayas', 'Peter Parker', 'The Batman', -> NAMED entity recognition-> from POS
+ # The cat eats the mouse
+ # <noun> - <verb> - <noun> -> from POS tagging, you could also figure out relationship in sentences
+
+ # Dependency parsing and tree-> which token is dependent on another token!
+ # The cat is hungry for cheese, a cat is hungry for rat
+
+ # verb-> hungry
+ # nouns-> cat, cheese
+ # root word-> hungry
+
+ #              hungry
+ #              /     \
+ #          cat         for
+ #          /   \     |     \
+ #        PH    is     rat  cheese
+ #      /   \
+ #      a    the
+
+
+ # Feature for the model training -> we then pass them to neural networks for weights and bias calculation
+ # the resulting features when very very deep and very very large -> LLM
+
+
+ # VECTORS -> also knowns as dimensions, tensors
+
+ # Embedding on these vectors -> embedding is what a neural network learns and forms patterns!
+
+import nltk # very good library, but has a few challenges, more stable
+
+import spacy # frequently updates, sometimes goes bonkers, a Lot more methods
+
+# import libs-> load a dictionary model -> start tokenizing
+
+from nltk.tokenize import word_tokenize
+nltk.download('punkt')
+
+# NLTK
+sentence = 'Doctor who can travel through time and space!'
+tokens_nltk = word_tokenize(sentence)
+print(tokens_nltk)
+
+#spacy
+nlp = spacy.load('en_core_web_sm')
+
+%python
+%pip install spacy
+
+import spacy
+
+# Load the spaCy model
+nlp = spacy.load('en_core_web_sm')
+
+sentence = 'Doctor who can travel through time and space!'
+tokens_spacy = nlp(sentence)
+for token in tokens_spacy:
+    print(token.text)
+
+tokens_spacy
+
+# hugging face
+
+from transformers import BertTokenizer
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+tokens_hf = tokenizer.tokenize(sentence)
+print(tokens_hf)
+
+%python
+# Ensure NLTK is installed
+%pip install nltk
+
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
+
+# Sample text
+text = "This is a sample sentence. Let's tokenize it!"
+
+# Tokenizing the text
+tokens_nltk = word_tokenize(text)
+
+
+# Accessing the first token
+token = tokens_nltk[0]
+print(dir(token))
+
+
+token = tokens_spacy[0]
+print(dir(token))
+
+
+
+# Lemmatization and stemming-> 2 ways in which words are reduced to their base form
+sentence = 'Shaktiman likes travelling through time and space on his penguin. He lives in New Delhi!'
+tokens_spacy = nlp(sentence)
+
+print('Named Entities along with their type')
+for ents in tokens_spacy.ents:
+  print(ents.text, ents.label_)
+
+
+print( )
+print()
+print()
+
+print('Token grammatical properties')
+
+for token in tokens_spacy:
+  print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_)
+
+  print('********')
+
+
+from spacy import displacy
+
+# function abc {
+#  a = 1;
+#. b =2; c = a + b;
+# }
+
+# compiler or interpretor-> tokens -> function-abc, {, a, b, c , }
+
+
+# while
+
+
+%python
+%pip install keras
+import keras
+imdb = keras.datasets.imdb
+
+
+print(dir(imdb))
+
+dbutils.library.restartPython()
