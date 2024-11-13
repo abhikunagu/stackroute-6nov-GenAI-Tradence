@@ -1,0 +1,32 @@
+%python
+# Step 1: Install spaCy and the English model using %pip
+%pip install spacy
+%pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz
+
+# Step 2: Load the spaCy language model
+import spacy
+from spacy.cli import download
+
+# Ensure the English model is downloaded (this is a workaround for notebooks)
+download("en_core_web_sm")
+
+# Load the spaCy model for English
+nlp = spacy.load("en_core_web_sm")
+
+# Step 3: Function to find noun chunks
+def find_noun_chunks(sentence):
+    # Process the sentence using the spaCy NLP pipeline
+    doc = nlp(sentence)
+    
+    # Extract noun chunks
+    noun_chunks = [chunk.text for chunk in doc.noun_chunks]
+    
+    return noun_chunks
+
+# Step 4: Example usage
+sentence = "The quick brown fox jumps over the lazy dog."
+noun_chunks = find_noun_chunks(sentence)
+
+# Step 5: Output the result
+print("Noun chunks in the sentence:", noun_chunks)
+
