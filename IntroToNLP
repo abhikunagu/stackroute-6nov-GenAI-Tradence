@@ -1,0 +1,224 @@
+# Unstructured data -> derive insights or make decisions or give instructions or take automated actions
+
+# data lake -> store the data
+# read and Feature engineer-> data pre-processing
+# train/Fine tune/transfer/use-as-is the model -> cluster/distributed processing
+# test the model -> monitoring infra
+# evaluate the model-> same monitoring infra
+# deploy the model -> containers, Kubernetes, Flask API....
+
+
+ # data pre-processing
+ #
+ # text data -> Document -> pages -> paragraphs -> sentences -> words
+ # SEGMENTATION
+
+ # individual components to analyze?
+ # TOKENIZATION
+
+
+ # The cat is hungry. -> [The, cat, is, hungry] or [The, cat, is, hungry, .]
+
+ # multiple words-> The Himalayas are tall -> ['The Himalayas', 'are', 'tall']
+
+ # stopwords -> a, an, the -> inconsequential words!
+ # sentiment analysis -> a, an, the could be used in both pos and neg sentiments!
+
+ # order to figure out these complex grammars:
+ # PART of SPEECH tagging -> nouns, pronouns, verbs, adverbs, adjectives
+
+ # 'The himalayas', 'Peter Parker', 'The Batman', -> NAMED entity recognition-> from POS
+ # The cat eats the mouse
+ #  -  -  -> from POS tagging, you could also figure out relationship in sentences
+
+ # Dependency parsing and tree-> which token is dependent on another token!
+ # The cat is hungry for cheese, a cat is hungry for rat
+
+ # verb-> hungry
+ # nouns-> cat, cheese
+ # root word-> hungry
+
+ #              hungry
+ #              /     \
+ #          cat         for
+ #          /   \     |     \
+ #        PH    is     rat  cheese
+ #      /   \
+ #      a    the
+
+
+ # Feature for the model training -> we then pass them to neural networks for weights and bias calculation
+ # the resulting features when very very deep and very very large -> LLM
+
+
+ # VECTORS -> also knowns as dimensions, tensors
+
+ # Embedding on these vectors -> embedding is what a neural network learns and forms patterns!
+
+     
+
+import nltk # very good library, but has a few challenges, more stable
+     
+
+import spacy # frequently updates, sometimes goes bonkers, a Lot more methods
+     
+
+# import libs-> load a dictionary model -> start tokenizing
+
+from nltk.tokenize import word_tokenize
+nltk.download('punkt')
+
+     
+[nltk_data] Downloading package punkt to /root/nltk_data...
+[nltk_data]   Unzipping tokenizers/punkt.zip.
+True
+
+# NLTK
+sentence = 'Doctor who can travel through time and space!'
+tokens_nltk = word_tokenize(sentence)
+print(tokens_nltk)
+     
+['Doctor', 'who', 'can', 'travel', 'through', 'time', 'and', 'space', '!']
+
+#spacy
+nlp = spacy.load('en_core_web_sm')
+     
+
+sentence = 'Doctor who can travel through time and space!'
+tokens_spacy = nlp(sentence)
+for token in tokens_spacy:
+  print(token.text)
+     
+Doctor
+who
+can
+travel
+through
+time
+and
+space
+!
+
+tokens_spacy
+     
+Doctor who can travel through time and space!
+
+# hugging face
+
+from transformers import BertTokenizer
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+tokens_hf = tokenizer.tokenize(sentence)
+print(tokens_hf)
+     
+['doctor', 'who', 'can', 'travel', 'through', 'time', 'and', 'space', '!']
+
+token = tokens_nltk[0]
+print(dir(token))
+     
+['__add__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isascii', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'removeprefix', 'removesuffix', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+token = tokens_spacy[0]
+print(dir(token))
+     
+['_', '__bytes__', '__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__pyx_vtable__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__unicode__', 'ancestors', 'check_flag', 'children', 'cluster', 'conjuncts', 'dep', 'dep_', 'doc', 'ent_id', 'ent_id_', 'ent_iob', 'ent_iob_', 'ent_kb_id', 'ent_kb_id_', 'ent_type', 'ent_type_', 'get_extension', 'has_dep', 'has_extension', 'has_head', 'has_morph', 'has_vector', 'head', 'i', 'idx', 'iob_strings', 'is_alpha', 'is_ancestor', 'is_ascii', 'is_bracket', 'is_currency', 'is_digit', 'is_left_punct', 'is_lower', 'is_oov', 'is_punct', 'is_quote', 'is_right_punct', 'is_sent_end', 'is_sent_start', 'is_space', 'is_stop', 'is_title', 'is_upper', 'lang', 'lang_', 'left_edge', 'lefts', 'lemma', 'lemma_', 'lex', 'lex_id', 'like_email', 'like_num', 'like_url', 'lower', 'lower_', 'morph', 'n_lefts', 'n_rights', 'nbor', 'norm', 'norm_', 'orth', 'orth_', 'pos', 'pos_', 'prefix', 'prefix_', 'prob', 'rank', 'remove_extension', 'right_edge', 'rights', 'sent', 'sent_start', 'sentiment', 'set_extension', 'set_morph', 'shape', 'shape_', 'similarity', 'subtree', 'suffix', 'suffix_', 'tag', 'tag_', 'tensor', 'text', 'text_with_ws', 'vector', 'vector_norm', 'vocab', 'whitespace_']
+
+# Lemmatization and stemming-> 2 ways in which words are reduced to their base form
+sentence = 'Shaktiman likes travelling through time and space on his penguin. He lives in New Delhi!'
+tokens_spacy = nlp(sentence)
+
+print('Named Entities along with their type')
+for ents in tokens_spacy.ents:
+  print(ents.text, ents.label_)
+
+
+print( )
+print()
+print()
+
+print('Token grammatical properties')
+
+for token in tokens_spacy:
+  print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_)
+
+  print('********')
+     
+Named Entities along with their type
+Shaktiman PERSON
+New Delhi GPE
+
+
+
+Token grammatical properties
+Shaktiman Shaktiman PROPN NNP nsubj
+********
+likes like VERB VBZ ROOT
+********
+travelling travel VERB VBG xcomp
+********
+through through ADP IN prep
+********
+time time NOUN NN pobj
+********
+and and CCONJ CC cc
+********
+space space NOUN NN conj
+********
+on on ADP IN prep
+********
+his his PRON PRP$ poss
+********
+penguin penguin NOUN NN pobj
+********
+. . PUNCT . punct
+********
+He he PRON PRP nsubj
+********
+lives live VERB VBZ ROOT
+********
+in in ADP IN prep
+********
+New New PROPN NNP compound
+********
+Delhi Delhi PROPN NNP pobj
+********
+! ! PUNCT . punct
+********
+
+from spacy import displacy
+     
+
+displacy.render(tokens_spacy, style='dep')
+     
+ShaktimanPROPN
+likesVERB
+travellingVERB
+throughADP
+timeNOUN
+andCCONJ
+spaceNOUN
+onADP
+hisPRON
+penguin.NOUN
+HePRON
+livesVERB
+inADP
+NewPROPN
+Delhi!PROPN
+
+# function abc {
+#  a = 1;
+#. b =2; c = a + b;
+# }
+
+# compiler or interpretor-> tokens -> function-abc, {, a, b, c , }
+     
+
+# while
+     
+  c
+  |
+  +
+/.  \
+a.   b
+|.    |
+1.    2
