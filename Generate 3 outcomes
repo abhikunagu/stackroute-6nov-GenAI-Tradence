@@ -1,0 +1,42 @@
+%python
+# Install the spaCy model
+%pip install spacy
+%pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.1.0/en_core_web_sm-3.1.0.tar.gz
+
+# Generate a story of 100 words about the prompt
+from transformers import pipeline
+
+# Initialize the text generation pipeline
+generator = pipeline('text-generation', model='gpt2')
+
+# Generate a story
+prompt = "Once upon a time in a land far, far away"
+story = generator(prompt, max_length=100, num_return_sequences=1)[0]['generated_text']
+
+# Display the generated story
+print("Generated Story:\n", story)
+
+# Represent the story in a vector/embeddings format
+from sentence_transformers import SentenceTransformer
+
+# Initialize the sentence transformer model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Generate embeddings for the story
+embeddings = model.encode(story)
+
+# Display the embeddings
+print("Embeddings:\n", embeddings)
+
+# Find all Part-of-Speeches in the generated story
+import spacy
+
+# Load the spaCy model
+nlp = spacy.load('en_core_web_sm')
+
+# Process the story
+doc = nlp(story)
+
+# Extract and display part-of-speech tags
+pos_tags = [(token.text, token.pos_) for token in doc]
+print("Part-of-Speech Tags:\n", pos_tags)
