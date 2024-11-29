@@ -1,0 +1,8 @@
+%python
+def build_model(prompt):
+    # Your code to build a model which can generate code with comments based on the prompt
+    pass
+
+# Example usage
+prompt = "Generate code with comments"
+build_model(prompt)
