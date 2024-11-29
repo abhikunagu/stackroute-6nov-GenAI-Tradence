@@ -1,0 +1,28 @@
+%python
+# Install Spacy and the English model
+%pip install spacy
+!python -m spacy download en_core_web_sm
+
+import spacy
+from pyspark.sql import SparkSession
+
+# Load the Spacy model
+nlp = spacy.load("en_core_web_sm")
+
+# Function to find noun chunks
+def find_noun_chunks(sentence):
+    doc = nlp(sentence)
+    return [chunk.text for chunk in doc.noun_chunks]
+
+# Example sentence
+sentence = "The quick brown fox jumps over the lazy dog."
+
+# Find noun chunks
+noun_chunks = find_noun_chunks(sentence)
+
+# Convert the list of noun chunks to a DataFrame
+spark = SparkSession.builder.getOrCreate()
+noun_chunks_df = spark.createDataFrame([(chunk,) for chunk in noun_chunks], ["noun_chunk"])
+
+# Display the DataFrame
+display(noun_chunks_df)
