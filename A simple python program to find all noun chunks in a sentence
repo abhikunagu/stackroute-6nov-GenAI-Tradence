@@ -1,108 +1,198 @@
 %python
-# Step 1: Install spaCy and the English model
+def chatbot():
+    print("Welcome to the chatbot! Type 'exit' to end the conversation.")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == 'exit':
+            print("Chatbot: Goodbye!")
+            break
+        else:
+            print(f"Chatbot: You said '{user_input}'")
+
+# Start the chatbot
+chatbot()
+Welcome to the chatbot! Type 'exit' to end the conversation.
+You:  com.databricks.backend.common.rpc.CommandCancelledException
+	at com.databricks.spark.chauffeur.SequenceExecutionState.$anonfun$cancel$5(SequenceExecutionState.scala:136)
+	at scala.Option.getOrElse(Option.scala:189)
+	at com.databricks.spark.chauffeur.SequenceExecutionState.$anonfun$cancel$3(SequenceExecutionState.scala:136)
+	at com.databricks.spark.chauffeur.SequenceExecutionState.$anonfun$cancel$3$adapted(SequenceExecutionState.scala:133)
+	at scala.collection.immutable.Range.foreach(Range.scala:158)
+	at com.databricks.spark.chauffeur.SequenceExecutionState.cancel(SequenceExecutionState.scala:133)
+	at com.databricks.spark.chauffeur.ExecContextState.cancelRunningSequence(ExecContextState.scala:730)
+	at com.databricks.spark.chauffeur.ExecContextState.$anonfun$cancel$1(ExecContextState.scala:448)
+	at scala.Option.getOrElse(Option.scala:189)
+	at com.databricks.spark.chauffeur.ExecContextState.cancel(ExecContextState.scala:448)
+	at com.databricks.spark.chauffeur.ChauffeurState.cancelExecution(ChauffeurState.scala:1311)
+	at com.databricks.spark.chauffeur.ChauffeurState.$anonfun$process$1(ChauffeurState.scala:1028)
+	at com.databricks.logging.UsageLogging.$anonfun$recordOperation$1(UsageLogging.scala:573)
+	at com.databricks.logging.UsageLogging.executeThunkAndCaptureResultTags$1(UsageLogging.scala:669)
+	at com.databricks.logging.UsageLogging.$anonfun$recordOperationWithResultTags$4(UsageLogging.scala:687)
+	at com.databricks.logging.UsageLogging.$anonfun$withAttributionContext$1(UsageLogging.scala:426)
+	at scala.util.DynamicVariable.withValue(DynamicVariable.scala:62)
+	at com.databricks.logging.AttributionContext$.withValue(AttributionContext.scala:216)
+	at com.databricks.logging.UsageLogging.withAttributionContext(UsageLogging.scala:424)
+	at com.databricks.logging.UsageLogging.withAttributionContext$(UsageLogging.scala:418)
+	at com.databricks.spark.chauffeur.ChauffeurState.withAttributionContext(ChauffeurState.scala:74)
+	at com.databricks.logging.UsageLogging.withAttributionTags(UsageLogging.scala:472)
+	at com.databricks.logging.UsageLogging.withAttributionTags$(UsageLogging.scala:455)
+	at com.databricks.spark.chauffeur.ChauffeurState.withAttributionTags(ChauffeurState.scala:74)
+...
+	at com.databricks.rpc.InstrumentedQueuedThreadPool.trackActiveThreads(InstrumentedQueuedThreadPool.scala:47)
+	at com.databricks.rpc.InstrumentedQueuedThreadPool$$anon$1.run(InstrumentedQueuedThreadPool.scala:86)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:883)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1034)
+	at java.lang.Thread.run(Thread.java:750)
+Output is truncated. View as a scrollable element or open in a text editor. Adjust cell output settings...
+
+%python
+# Classify input prompt as a positive or negative sentiment
+%python
+# Install spaCy and download the English model
 %pip install spacy
 !python -m spacy download en_core_web_sm
 
-# Step 2: Load the spaCy language model
 import spacy
 
-# Load the spaCy model for English
+# Load the spaCy model
 nlp = spacy.load("en_core_web_sm")
 
-# Step 3: Function to find noun chunks
-def find_noun_chunks(sentence):
-    # Process the sentence using the spaCy NLP pipeline
-    doc = nlp(sentence)
-    
-    # Extract noun chunks
-    noun_chunks = [chunk.text for chunk in doc.noun_chunks]
-    
-    return noun_chunks
+# Define the text prompt
+text = "Your text prompt goes here."
 
-# Step 4: Example usage
-sentence = "The quick brown fox jumps over the lazy dog."
-noun_chunks = find_noun_chunks(sentence)
+# Process the text with spaCy
+doc = nlp(text)
 
-# Step 5: Output the result
-print("Noun chunks in the sentence:", noun_chunks)
+# Extract named entities
+entities = [(ent.text, ent.label_) for ent in doc.ents]
 
-
-
-
-output:
-
+# Check if entities list is not empty before displaying
+if entities:
+    df = spark.createDataFrame(entities, ["Entity", "Label"])
+    display(df)
+else:
+    print("No entities found.")
 Note: you may need to restart the kernel using dbutils.library.restartPython() to use updated packages.
 Requirement already satisfied: spacy in /databricks/python3/lib/python3.10/site-packages (3.7.2)
+Requirement already satisfied: murmurhash<1.1.0,>=0.28.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.0.10)
+Requirement already satisfied: pydantic!=1.8,!=1.8.1,<3.0.0,>=1.7.4 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.10.6)
+Requirement already satisfied: smart-open<7.0.0,>=5.2.1 in /databricks/python3/lib/python3.10/site-packages (from spacy) (5.2.1)
+Requirement already satisfied: thinc<8.3.0,>=8.1.8 in /databricks/python3/lib/python3.10/site-packages (from spacy) (8.2.2)
+Requirement already satisfied: jinja2 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.1.2)
 Requirement already satisfied: cymem<2.1.0,>=2.0.2 in /databricks/python3/lib/python3.10/site-packages (from spacy) (2.0.8)
 Requirement already satisfied: catalogue<2.1.0,>=2.0.6 in /databricks/python3/lib/python3.10/site-packages (from spacy) (2.0.10)
-Requirement already satisfied: langcodes<4.0.0,>=3.2.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.3.0)
-Requirement already satisfied: numpy>=1.19.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.23.5)
-Requirement already satisfied: wasabi<1.2.0,>=0.9.1 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.1.2)
+Requirement already satisfied: weasel<0.4.0,>=0.1.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (0.3.4)
 Requirement already satisfied: setuptools in /databricks/python3/lib/python3.10/site-packages (from spacy) (65.6.3)
+Requirement already satisfied: langcodes<4.0.0,>=3.2.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.3.0)
 Requirement already satisfied: srsly<3.0.0,>=2.4.3 in /databricks/python3/lib/python3.10/site-packages (from spacy) (2.4.8)
 Requirement already satisfied: spacy-loggers<2.0.0,>=1.0.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.0.5)
-Requirement already satisfied: requests<3.0.0,>=2.13.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (2.28.1)
-Requirement already satisfied: pydantic!=1.8,!=1.8.1,<3.0.0,>=1.7.4 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.10.6)
-Requirement already satisfied: typer<0.10.0,>=0.3.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (0.9.0)
+Requirement already satisfied: numpy>=1.19.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.23.5)
 Requirement already satisfied: tqdm<5.0.0,>=4.38.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (4.64.1)
-Requirement already satisfied: spacy-legacy<3.1.0,>=3.0.11 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.0.12)
-Requirement already satisfied: preshed<3.1.0,>=3.0.2 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.0.9)
-Requirement already satisfied: thinc<8.3.0,>=8.1.8 in /databricks/python3/lib/python3.10/site-packages (from spacy) (8.2.2)
-Requirement already satisfied: murmurhash<1.1.0,>=0.28.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.0.10)
-Requirement already satisfied: smart-open<7.0.0,>=5.2.1 in /databricks/python3/lib/python3.10/site-packages (from spacy) (5.2.1)
-Requirement already satisfied: jinja2 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.1.2)
+Requirement already satisfied: wasabi<1.2.0,>=0.9.1 in /databricks/python3/lib/python3.10/site-packages (from spacy) (1.1.2)
 Requirement already satisfied: packaging>=20.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (23.2)
-Requirement already satisfied: weasel<0.4.0,>=0.1.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (0.3.4)
+Requirement already satisfied: requests<3.0.0,>=2.13.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (2.28.1)
+Requirement already satisfied: typer<0.10.0,>=0.3.0 in /databricks/python3/lib/python3.10/site-packages (from spacy) (0.9.0)
+Requirement already satisfied: preshed<3.1.0,>=3.0.2 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.0.9)
+Requirement already satisfied: spacy-legacy<3.1.0,>=3.0.11 in /databricks/python3/lib/python3.10/site-packages (from spacy) (3.0.12)
 Requirement already satisfied: typing-extensions>=4.2.0 in /databricks/python3/lib/python3.10/site-packages (from pydantic!=1.8,!=1.8.1,<3.0.0,>=1.7.4->spacy) (4.4.0)
-Requirement already satisfied: charset-normalizer<3,>=2 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy) (2.0.4)
 Requirement already satisfied: urllib3<1.27,>=1.21.1 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy) (1.26.14)
-Requirement already satisfied: idna<4,>=2.5 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy) (3.4)
 Requirement already satisfied: certifi>=2017.4.17 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy) (2022.12.7)
-Requirement already satisfied: confection<1.0.0,>=0.0.1 in /databricks/python3/lib/python3.10/site-packages (from thinc<8.3.0,>=8.1.8->spacy) (0.1.4)
-Requirement already satisfied: blis<0.8.0,>=0.7.8 in /databricks/python3/lib/python3.10/site-packages (from thinc<8.3.0,>=8.1.8->spacy) (0.7.11)
-Requirement already satisfied: click<9.0.0,>=7.1.1 in /databricks/python3/lib/python3.10/site-packages (from typer<0.10.0,>=0.3.0->spacy) (8.0.4)
-Requirement already satisfied: cloudpathlib<0.17.0,>=0.7.0 in /databricks/python3/lib/python3.10/site-packages (from weasel<0.4.0,>=0.1.0->spacy) (0.16.0)
-Requirement already satisfied: MarkupSafe>=2.0 in /databricks/python3/lib/python3.10/site-packages (from jinja2->spacy) (2.1.1)
-Note: you may need to restart the kernel using dbutils.library.restartPython() to use updated packages.
-Collecting en-core-web-sm==3.7.1
-  Downloading https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl (12.8 MB)
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 32.7 MB/s eta 0:00:0000:0100:01
-Requirement already satisfied: spacy<3.8.0,>=3.7.2 in /databricks/python3/lib/python3.10/site-packages (from en-core-web-sm==3.7.1) (3.7.2)
-Requirement already satisfied: numpy>=1.19.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (1.23.5)
-Requirement already satisfied: langcodes<4.0.0,>=3.2.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (3.3.0)
-Requirement already satisfied: smart-open<7.0.0,>=5.2.1 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (5.2.1)
-Requirement already satisfied: cymem<2.1.0,>=2.0.2 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (2.0.8)
-Requirement already satisfied: requests<3.0.0,>=2.13.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (2.28.1)
-Requirement already satisfied: typer<0.10.0,>=0.3.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (0.9.0)
-Requirement already satisfied: packaging>=20.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (23.2)
-Requirement already satisfied: weasel<0.4.0,>=0.1.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (0.3.4)
-Requirement already satisfied: catalogue<2.1.0,>=2.0.6 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (2.0.10)
-Requirement already satisfied: wasabi<1.2.0,>=0.9.1 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (1.1.2)
-Requirement already satisfied: setuptools in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (65.6.3)
-Requirement already satisfied: spacy-loggers<2.0.0,>=1.0.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (1.0.5)
-Requirement already satisfied: spacy-legacy<3.1.0,>=3.0.11 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (3.0.12)
-Requirement already satisfied: srsly<3.0.0,>=2.4.3 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (2.4.8)
-Requirement already satisfied: jinja2 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (3.1.2)
-Requirement already satisfied: murmurhash<1.1.0,>=0.28.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (1.0.10)
-Requirement already satisfied: pydantic!=1.8,!=1.8.1,<3.0.0,>=1.7.4 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (1.10.6)
-Requirement already satisfied: preshed<3.1.0,>=3.0.2 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (3.0.9)
-Requirement already satisfied: thinc<8.3.0,>=8.1.8 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (8.2.2)
-Requirement already satisfied: tqdm<5.0.0,>=4.38.0 in /databricks/python3/lib/python3.10/site-packages (from spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (4.64.1)
-Requirement already satisfied: typing-extensions>=4.2.0 in /databricks/python3/lib/python3.10/site-packages (from pydantic!=1.8,!=1.8.1,<3.0.0,>=1.7.4->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (4.4.0)
-Requirement already satisfied: certifi>=2017.4.17 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (2022.12.7)
-Requirement already satisfied: charset-normalizer<3,>=2 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (2.0.4)
-Requirement already satisfied: urllib3<1.27,>=1.21.1 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (1.26.14)
-Requirement already satisfied: idna<4,>=2.5 in /databricks/python3/lib/python3.10/site-packages (from requests<3.0.0,>=2.13.0->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (3.4)
-Requirement already satisfied: blis<0.8.0,>=0.7.8 in /databricks/python3/lib/python3.10/site-packages (from thinc<8.3.0,>=8.1.8->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (0.7.11)
-Requirement already satisfied: confection<1.0.0,>=0.0.1 in /databricks/python3/lib/python3.10/site-packages (from thinc<8.3.0,>=8.1.8->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (0.1.4)
-Requirement already satisfied: click<9.0.0,>=7.1.1 in /databricks/python3/lib/python3.10/site-packages (from typer<0.10.0,>=0.3.0->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (8.0.4)
-Requirement already satisfied: cloudpathlib<0.17.0,>=0.7.0 in /databricks/python3/lib/python3.10/site-packages (from weasel<0.4.0,>=0.1.0->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (0.16.0)
-Requirement already satisfied: MarkupSafe>=2.0 in /databricks/python3/lib/python3.10/site-packages (from jinja2->spacy<3.8.0,>=3.7.2->en-core-web-sm==3.7.1) (2.1.1)
-Installing collected packages: en-core-web-sm
-Successfully installed en-core-web-sm-3.7.1
-
-[notice] A new release of pip available: 22.3.1 -> 24.3.1
+...
 [notice] To update, run: pip install --upgrade pip
 ✔ Download and installation successful
 You can now load the package via spacy.load('en_core_web_sm')
-Noun chunks in the sentence: ['The quick brown fox', 'the lazy dog']
+No entities found.
+Output is truncated. View as a scrollable element or open in a text editor. Adjust cell output settings...
+%python
+# Classify if the prompt is requesting text
+%python
+result = "information" or "image" or "translation"
+display(result)
+%python
+def get_response(data):
+    if isinstance(data, str):
+        return {"response_type": "text", "content": data}
+    elif isinstance(data, bytes):
+        return {"response_type": "image", "content": data}
+    else:
+        return {"response_type": "unknown", "content": None}
+
+# Example usage
+text_response = get_response("This is a text response")
+image_response = get_response(b"This is an image response in bytes")
+display(text_response)
+display(image_response)
+%python
+def get_response(data):
+    if isinstance(data, str):
+        return {"response_type": "text", "content": data}
+    elif isinstance(data, bytes):
+        return {"response_type": "image", "content": data}
+    else:
+        return {"response_type": "unknown", "content": None}
+
+# Example usage
+text_response = get_response("This is a text response")
+image_response = get_response(b"This is an image response in bytes")
+
+display(text_response)
+display(image_response)
+%python
+# Define the function get_image_captions
+def get_image_captions(image):
+    # Dummy implementation, replace with actual logic
+    return ["Caption 1", "Caption 2", "Caption 3"]
+
+# Define the variable request_is_for_image
+request_is_for_image = True  # or False, depending on your logic
+
+# Define the variable image
+image = "path/to/your/image.jpg"  # Replace with the actual image path or object
+
+# If the request is for an image, the bot should return at least 3 captions along with the image
+if request_is_for_image:
+    captions = get_image_captions(image)
+    if len(captions) >= 3:
+        display(image, captions)
+'path/to/your/image.jpg'
+['Caption 1', 'Caption 2', 'Caption 3']
+%python
+%pip install googletrans==4.0.0-rc1
+
+from googletrans import Translator
+
+translator = Translator()
+text = "Hello, how are you?"
+translated = translator.translate(text, dest='es')  # 'es' is the language code for Spanish
+print(translated.text)
+Note: you may need to restart the kernel using dbutils.library.restartPython() to use updated packages.
+Collecting googletrans==4.0.0-rc1
+  Downloading googletrans-4.0.0rc1.tar.gz (20 kB)
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Collecting httpx==0.13.3
+  Downloading httpx-0.13.3-py3-none-any.whl (55 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 55.1/55.1 kB 2.5 MB/s eta 0:00:00
+Collecting rfc3986<2,>=1.3
+  Downloading rfc3986-1.5.0-py2.py3-none-any.whl (31 kB)
+Collecting idna==2.*
+  Downloading idna-2.10-py2.py3-none-any.whl (58 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 58.8/58.8 kB 4.2 MB/s eta 0:00:00
+Requirement already satisfied: certifi in /databricks/python3/lib/python3.10/site-packages (from httpx==0.13.3->googletrans==4.0.0-rc1) (2022.12.7)
+Collecting httpcore==0.9.*
+  Downloading httpcore-0.9.1-py3-none-any.whl (42 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.6/42.6 kB 4.0 MB/s eta 0:00:00
+Collecting hstspreload
+  Downloading hstspreload-2024.12.1-py3-none-any.whl (1.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 10.3 MB/s eta 0:00:00
+Collecting chardet==3.*
+  Downloading chardet-3.0.4-py2.py3-none-any.whl (133 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 133.4/133.4 kB 10.6 MB/s eta 0:00:00
+Requirement already satisfied: sniffio in /databricks/python3/lib/python3.10/site-packages (from httpx==0.13.3->googletrans==4.0.0-rc1) (1.2.0)
+Collecting h11<0.10,>=0.8
+...
+databricks-feature-engineering 0.2.1 requires pyspark<4,>=3.1.2, which is not installed.
+Successfully installed chardet-3.0.4 googletrans-4.0.0rc1 h11-0.9.0 h2-3.2.0 hpack-3.0.0 hstspreload-2024.12.1 httpcore-0.9.1 httpx-0.13.3 hyperframe-5.2.0 idna-2.10 rfc3986-1.5.0
+Note: you may need to restart the kernel using dbutils.library.restartPython() to use updated packages.
+¿Hola, cómo estás?
+Output is truncated. View as a scrollable element or open in a text editor. Adjust cell output settings...
